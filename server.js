@@ -5,20 +5,22 @@ const todos = DataStore({ filename: "data/todos.json", autoload: true });
 
 const typeDefs = gql`
   type Query {
-    hello: String!
     todos: [Todo]
+    addTodo(name: String): Todo
   }
 
   type Todo {
     _id: ID!
     name: String
+    date: String
   }
 `;
 
 const resolvers = {
   Query: {
-    hello: () => "hello world",
     todos: async () => await todos.find({}),
+    addTodo: async (_, { name }) =>
+      await todos.insert({ name: name, date: new Date() }),
   },
 };
 
