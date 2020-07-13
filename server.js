@@ -1,29 +1,27 @@
-const { ApolloServer, gql } = require("apollo-server");
-const DataStore = require("nedb-promise");
-
-const todos = DataStore({ filename: "data/todos.json", autoload: true });
+const { ApolloServer, gql } = require('apollo-server')
+const Mews = require('./db/Mews')
 
 const typeDefs = gql`
-  type Query {
-    todos: [Todo]
-    addTodo(name: String): Todo
+  type Mew {
+    _id: ID!
+    username: String
+    mew: String
   }
 
-  type Todo {
-    _id: ID!
-    name: String
-    date: String
+  type Query {
+    mews: [Mew]
+    addMew(username: String, mew: String): Mew
   }
-`;
+`
 
 const resolvers = {
   Query: {
-    todos: async () => await todos.find({}),
-    addTodo: async (_, { name }) =>
-      await todos.insert({ name: name, date: new Date() }),
+    mews: async () => await Mews.find({}),
+    addMew: async (_, { username, mew }) =>
+      await Mews.insert({ username, mew }),
   },
-};
+}
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({ typeDefs, resolvers })
 
-server.listen().then(({ url }) => console.log(`server started at ${url}`));
+server.listen().then(({ url }) => console.log(`server started at ${url}`))
